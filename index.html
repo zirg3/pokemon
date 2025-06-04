@@ -161,7 +161,7 @@
                 0 4px 4px rgba(0,0,0,0.1),
                 0 8px 8px rgba(0,0,0,0.1);
             transform-style: preserve-3d;
-            transition: all 0.5s ease;
+            transition: all 1s ease;
             cursor: pointer;
             border: 2px solid #ffde00;
         }
@@ -169,6 +169,8 @@
         .stacked-card.flipped {
             <!-- transform: rotateY(180deg) translateY(20px) !important; -->
             z-index: 1;
+			transform:translateX(180px) !important;
+			opacity: 0.4;
         }
         
         .card-content {
