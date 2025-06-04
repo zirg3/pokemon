@@ -417,31 +417,80 @@
                 type: 'common', 
                 class: 'common-card', 
                 probability: 0.55,
-                arts: ['pikachu', 'eevee', 'charmander', 'bulbasaur', 'squirtle']
+                arts: [
+                    'pikachu', 'eevee', 'charmander', 'bulbasaur', 'squirtle',
+                    'rattata', 'pidgey', 'caterpie', 'weedle', 'spearow',
+                    'sandshrew', 'nidoran-f', 'nidoran-m', 'vulpix', 'zubat',
+                    'oddish', 'paras', 'venonat', 'diglett', 'meowth'
+                ]
             },
             { 
                 type: 'uncommon', 
                 class: 'uncommon-card', 
                 probability: 0.3,
-                arts: ['jolteon', 'flareon', 'vaporeon', 'gengar', 'alakazam']
+                arts: [
+                    'jolteon', 'flareon', 'vaporeon', 'gengar', 'alakazam',
+                    'machamp', 'victreebel', 'golem', 'rapidash', 'magneton',
+                    'cloyster', 'exeggutor', 'starmie', 'scyther', 'electabuzz',
+                    'magmar', 'pinsir', 'tauros', 'lapras', 'kabutops'
+                ]
             },
             { 
                 type: 'rare', 
                 class: 'rare-card', 
                 probability: 0.1,
-                arts: ['charizard', 'blastoise', 'venusaur', 'dragonite', 'gyarados']
+                arts: [
+                    'charizard', 'blastoise', 'venusaur', 'dragonite', 'gyarados',
+                    'arcanine', 'snorlax', 'rhydon', 'kangaskhan', 'aerodactyl',
+                    'articuno', 'zapdos', 'moltres', 'ditto', 'chansey',
+                    'tangela', 'mr-mime', 'jynx', 'electrode', 'hitmonlee'
+                ]
             },
             { 
                 type: 'holo', 
                 class: 'holo-card', 
                 probability: 0.04,
-                arts: ['mew', 'mewtwo', 'lugia', 'ho-oh', 'rayquaza']
+                arts: [
+                    'mew', 'mewtwo', 'lugia', 'ho-oh', 'rayquaza',
+                    'celebi', 'jirachi', 'deoxys', 'darkrai', 'shaymin',
+                    'arceus', 'victini', 'genesect', 'xerneas', 'yveltal',
+                    'zygarde', 'diancie', 'volcanion', 'magearna', 'marshadow'
+                ]
             },
             { 
                 type: 'ultra rare', 
                 class: 'ultra-rare-card', 
                 probability: 0.01,
-                arts: ['golden-pikachu', 'golden-charizard', 'golden-mew', 'golden-lugia']
+                arts: [
+                    'pikachu-rare', 'charizard-rare', 'mew-rare', 'lugia-rare',
+                    'blastoise-rare', 'venusaur-rare', 'gyarados-rare', 'dragonite-rare',
+                    'mewtwo-rare', 'rayquaza-rare', 'ho-oh-rare', 'celebi-rare',
+                    'jirachi-rare', 'deoxys-rare', 'arceus-rare', 'xerneas-rare',
+                    'yveltal-rare', 'zygarde-rare', 'diancie-rare', 'magearna-rare'
+                ],
+                // Альтернативные URL для ультра-редких карт (реальные изображения из Pokémon TCG)
+                altArts: [
+                    'https://images.pokemontcg.io/xy7/27_hires.png', // Pikachu
+                    'https://images.pokemontcg.io/bw11/108_hires.png', // Charizard
+                    'https://images.pokemontcg.io/dp6/121_hires.png', // Mew
+                    'https://images.pokemontcg.io/np/35_hires.png', // Lugia
+                    'https://images.pokemontcg.io/base4/2_hires.png', // Blastoise
+                    'https://images.pokemontcg.io/base4/15_hires.png', // Venusaur
+                    'https://images.pokemontcg.io/base4/6_hires.png', // Gyarados
+                    'https://images.pokemontcg.io/ex3/4_hires.png', // Dragonite
+                    'https://images.pokemontcg.io/bw5/54_hires.png', // Mewtwo
+                    'https://images.pokemontcg.io/dp3/11_hires.png', // Rayquaza
+                    'https://images.pokemontcg.io/ex14/104_hires.png', // Ho-Oh
+                    'https://images.pokemontcg.io/ex9/106_hires.png', // Celebi
+                    'https://images.pokemontcg.io/ex7/101_hires.png', // Jirachi
+                    'https://images.pokemontcg.io/ex14/98_hires.png', // Deoxys
+                    'https://images.pokemontcg.io/dp5/96_hires.png', // Arceus
+                    'https://images.pokemontcg.io/xy6/146_hires.png', // Xerneas
+                    'https://images.pokemontcg.io/xy6/144_hires.png', // Yveltal
+                    'https://images.pokemontcg.io/sm3/73_hires.png', // Zygarde
+                    'https://images.pokemontcg.io/xy7/74_hires.png', // Diancie
+                    'https://images.pokemontcg.io/sm4/75_hires.png'  // Magearna
+                ]
             }
         ];
         
@@ -510,11 +559,19 @@
                     // Create card art placeholder
                     const cardArt = document.createElement('div');
                     cardArt.className = 'card-art';
-                    cardArt.style.backgroundImage = `url('https://img.pokemondb.net/artwork/${cardInfo.art}.jpg')`;
+                    
+                    // Для ультра-редких карт используем альтернативные изображения
+                    if (cardInfo.type === 'ultra rare') {
+                        const artIndex = cardInfo.arts.indexOf(cardInfo.art);
+                        cardArt.style.backgroundImage = `url('${cardInfo.altArts[artIndex]}')`;
+                        cardArt.style.backgroundSize = 'cover';
+                    } else {
+                        cardArt.style.backgroundImage = `url('https://img.pokemondb.net/artwork/${cardInfo.art}.jpg')`;
+                    }
                     
                     // Create card content
                     const cardName = document.createElement('div');
-                    cardName.textContent = cardInfo.art.toUpperCase();
+                    cardName.textContent = cardInfo.art.split('-')[0].toUpperCase(); // Удаляем -rare для отображения
                     
                     const cardType = document.createElement('div');
                     cardType.className = 'card-type';
@@ -522,7 +579,7 @@
                     
                     const cardRarity = document.createElement('div');
                     cardRarity.className = 'card-rarity';
-                    cardRarity.textContent = '★'.repeat(cardInfo === 'ultra rare' ? 3 : cardInfo === 'holo' ? 2 : 1);
+                    cardRarity.textContent = '★'.repeat(cardInfo.type === 'ultra rare' ? 3 : cardInfo.type === 'holo' ? 2 : 1);
                     
                     cardElement.appendChild(cardArt);
                     cardElement.appendChild(cardName);
