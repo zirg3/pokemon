@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Pokémon Booster Pack</title>
+    <title>Pokémon Booster Pack Simulator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
-        
         body {
             display: flex;
             flex-direction: column;
@@ -15,7 +13,7 @@
             min-height: 100vh;
             background: radial-gradient(circle, #1a2b8f, #0d1a4a);
             perspective: 1000px;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-family: 'Arial', sans-serif;
             overflow-x: hidden;
             margin: 0;
             padding: 20px;
@@ -81,12 +79,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.8) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
+            background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
             opacity: 0.3;
             transform: rotate(30deg) translateX(-30%) translateY(-50%);
             transition: all 0.5s;
@@ -100,7 +93,7 @@
             width: 120px;
             height: 120px;
             margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
             animation: float 3s ease-in-out infinite;
         }
         
@@ -108,7 +101,7 @@
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 10px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
             letter-spacing: 1px;
             transform: translateZ(20px);
         }
@@ -116,7 +109,7 @@
         .pack-subtitle {
             font-size: 18px;
             margin-bottom: 20px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
             transform: translateZ(15px);
         }
         
@@ -132,7 +125,7 @@
             padding: 12px 25px;
             border-radius: 50px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: all 0.3s;
             border: none;
             font-size: 16px;
@@ -144,15 +137,63 @@
         
         .open-me:hover {
             transform: translateZ(20px) scale(1.05);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.4);
         }
         
+        /* Стили для стопки карт */
+        .card-stack {
+            position: relative;
+            width: 200px;
+            height: 280px;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        .stacked-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.redd.it/smwf34egq5lc1.png') center/cover;
+            border-radius: 10px;
+            box-shadow: 
+                0 1px 1px rgba(0,0,0,0.1),
+                0 2px 2px rgba(0,0,0,0.1),
+                0 4px 4px rgba(0,0,0,0.1),
+                0 8px 8px rgba(0,0,0,0.1);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            border: 2px solid #ffde00;
+        }
+        
+        .stacked-card.flipped {
+            transform: rotateY(180deg) translateY(20px) !important;
+            z-index: 1;
+        }
+        
+        .card-content {
+		    background: white;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        /* Стили для карт после раскрытия */
         .cards-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
             width: 100%;
             max-width: 900px;
             perspective: 1000px;
@@ -162,9 +203,8 @@
             position: relative;
             width: 180px;
             height: 250px;
-            background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -172,79 +212,7 @@
             font-size: 18px;
             font-weight: bold;
             transform-style: preserve-3d;
-            transform: rotateY(180deg) scale(0.8);
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .card.revealed {
-            transform: rotateY(0deg) scale(1);
-            opacity: 1;
-        }
-        
-        .card:hover {
-            transform: rotateY(0deg) scale(1.05) !important;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-        
-        .common-card {
-            background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
-            color: #333;
-        }
-        
-        .uncommon-card {
-            background: linear-gradient(145deg, #b8e0d2, #86c7b7);
-            color: #1a3b35;
-        }
-        
-        .rare-card {
-            background: linear-gradient(145deg, #ffde00, #e6c700);
-            color: #6d5c00;
-            box-shadow: 0 0 30px rgba(255, 222, 0, 0.7);
-        }
-        
-        .holo-card {
-            background: linear-gradient(145deg, #a8d8ea, #7ab8d8);
-            color: #0d3c5f;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(168, 216, 234, 0.8);
-        }
-        
-        .holo-effect {
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                rgba(255,255,255,0) 0%,
-                rgba(255,255,255,0.9) 50%,
-                rgba(255,255,255,0) 100%
-            );
-            animation: holoShine 3s infinite;
-            transform: rotate(45deg);
-        }
-        
-        .ultra-rare-card {
-            background: linear-gradient(145deg, #ff9d00, #ff5e00);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 50px rgba(255, 157, 0, 0.8);
-        }
-        
-        .sparkle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: sparkle 2s infinite;
         }
         
         .card-art {
@@ -263,19 +231,67 @@
             color: #666;
         }
         
-        .rare-card .card-type,
-        .holo-card .card-type,
-        .ultra-rare-card .card-type {
-            color: inherit;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        
         .card-rarity {
             position: absolute;
             bottom: 10px;
             right: 10px;
             font-size: 12px;
             font-weight: bold;
+        }
+        
+        /* Редкости карт */
+        .common-card {
+            background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
+            color: #333;
+        }
+        
+        .uncommon-card {
+            background: linear-gradient(145deg, #b8e0d2, #86c7b7);
+            color: #1a3b35;
+        }
+        
+        .rare-card {
+            background: linear-gradient(145deg, #ffde00, #e6c700);
+            color: #6d5c00;
+            box-shadow: 0 0 30px rgba(255,222,0,0.7);
+        }
+        
+        .holo-card {
+            background: linear-gradient(145deg, #a8d8ea, #7ab8d8);
+            color: #0d3c5f;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(168,216,234,0.8);
+        }
+        
+        .ultra-rare-card {
+            background: linear-gradient(145deg, #ff9d00, #ff5e00);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255,157,0,0.8);
+        }
+        
+        /* Эффекты */
+        .holo-effect {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+            animation: holoShine 3s infinite;
+            transform: rotate(45deg);
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 2s infinite;
         }
         
         .pull-animation {
@@ -287,34 +303,6 @@
             animation: pullEffect 1s forwards;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes holoShine {
-            0% { transform: rotate(45deg) translateX(-100%) translateY(-100%); }
-            100% { transform: rotate(45deg) translateX(100%) translateY(100%); }
-        }
-        
-        @keyframes sparkle {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0); opacity: 0; }
-        }
-        
-        @keyframes pullEffect {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(3); opacity: 0.8; }
-            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
-        }
-        
-        @keyframes cardReveal {
-            0% { transform: rotateY(180deg) scale(0.5); opacity: 0; }
-            100% { transform: rotateY(0deg) scale(1); opacity: 1; }
-        }
-        
         .confetti {
             position: fixed;
             width: 10px;
@@ -323,33 +311,6 @@
             opacity: 0;
             z-index: 99;
             animation: confettiFall 3s linear forwards;
-        }
-        
-        @keyframes confettiFall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-        
-        .reset-btn {
-            margin-top: 30px;
-            padding: 12px 25px;
-            background: linear-gradient(145deg, #ff0000, #cc0000);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transform: translateZ(0);
-        }
-        
-        .reset-btn:hover {
-            transform: translateZ(0) scale(1.05);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
         }
         
         .pack-shadow {
@@ -375,6 +336,58 @@
             background-position: 0 0, 10px 10px;
             opacity: 0.3;
         }
+        
+        /* Анимации */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes holoShine {
+            0% { transform: rotate(45deg) translateX(-100%) translateY(-100%); }
+            100% { transform: rotate(45deg) translateX(100%) translateY(100%); }
+        }
+        
+        @keyframes sparkle {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        
+        @keyframes pullEffect {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(3); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .reset-btn {
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(145deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateZ(0);
+            display: none;
+        }
+        
+        .reset-btn:hover {
+            transform: translateZ(0) scale(1.05);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.4);
+        }
     </style>
 </head>
 <body>
@@ -392,7 +405,7 @@
                 </svg>
                 <div class="pack-title">POKÉMON BOOSTER</div>
                 <div class="pack-subtitle">Scarlet & Violet</div>
-                <div class="pack-contents">Contains 5 game cards</div>
+                <div class="pack-contents">Contains 7 game cards</div>
                 <button class="open-me" id="openPackBtn">OPEN PACK</button>
             </div>
             <div class="booster-pack-back">
@@ -401,17 +414,20 @@
         </div>
     </div>
     
+    <div class="card-stack" id="cardStack"></div>
+    
     <div class="cards-container" id="cardsContainer"></div>
     
     <button class="reset-btn" id="resetBtn">OPEN NEW PACK</button>
     
     <script>
         const boosterPack = document.getElementById('boosterPack');
+        const cardStack = document.getElementById('cardStack');
         const cardsContainer = document.getElementById('cardsContainer');
         const resetBtn = document.getElementById('resetBtn');
         const openPackBtn = document.getElementById('openPackBtn');
         
-        // Card types with probabilities and art
+        // Card types with probabilities
         const cardTypes = [
             { 
                 type: 'common', 
@@ -462,49 +478,28 @@
                 class: 'ultra-rare-card', 
                 probability: 0.01,
                 arts: [
-                    'pikachu-rare', 'charizard-rare', 'mew-rare', 'lugia-rare',
-                    'blastoise-rare', 'venusaur-rare', 'gyarados-rare', 'dragonite-rare',
-                    'mewtwo-rare', 'rayquaza-rare', 'ho-oh-rare', 'celebi-rare',
-                    'jirachi-rare', 'deoxys-rare', 'arceus-rare', 'xerneas-rare',
-                    'yveltal-rare', 'zygarde-rare', 'diancie-rare', 'magearna-rare'
-                ],
-                // Альтернативные URL для ультра-редких карт (реальные изображения из Pokémon TCG)
-                altArts: [
-                    'https://images.pokemontcg.io/xy7/27_hires.png', // Pikachu
-                    'https://images.pokemontcg.io/bw11/108_hires.png', // Charizard
-                    'https://images.pokemontcg.io/dp6/121_hires.png', // Mew
-                    'https://images.pokemontcg.io/np/35_hires.png', // Lugia
-                    'https://images.pokemontcg.io/base4/2_hires.png', // Blastoise
-                    'https://images.pokemontcg.io/base4/15_hires.png', // Venusaur
-                    'https://images.pokemontcg.io/base4/6_hires.png', // Gyarados
-                    'https://images.pokemontcg.io/ex3/4_hires.png', // Dragonite
-                    'https://images.pokemontcg.io/bw5/54_hires.png', // Mewtwo
-                    'https://images.pokemontcg.io/dp3/11_hires.png', // Rayquaza
-                    'https://images.pokemontcg.io/ex14/104_hires.png', // Ho-Oh
-                    'https://images.pokemontcg.io/ex9/106_hires.png', // Celebi
-                    'https://images.pokemontcg.io/ex7/101_hires.png', // Jirachi
-                    'https://images.pokemontcg.io/ex14/98_hires.png', // Deoxys
-                    'https://images.pokemontcg.io/dp5/96_hires.png', // Arceus
-                    'https://images.pokemontcg.io/xy6/146_hires.png', // Xerneas
-                    'https://images.pokemontcg.io/xy6/144_hires.png', // Yveltal
-                    'https://images.pokemontcg.io/sm3/73_hires.png', // Zygarde
-                    'https://images.pokemontcg.io/xy7/74_hires.png', // Diancie
-                    'https://images.pokemontcg.io/sm4/75_hires.png'  // Magearna
+                    'pikachu', 'charizard', 'mew', 'lugia',
+                    'blastoise', 'venusaur', 'gyarados', 'dragonite',
+                    'mewtwo', 'rayquaza', 'ho-oh', 'celebi',
+                    'jirachi', 'deoxys', 'arceus', 'xerneas',
+                    'yveltal', 'zygarde', 'diancie', 'magearna'
                 ]
             }
         ];
+
+        let currentPack = [];
+        let revealedCards = 0;
         
         // Generate random cards for the pack
         function generatePack() {
             const pack = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 7; i++) {
                 const random = Math.random();
                 let cumulativeProbability = 0;
                 
                 for (const cardType of cardTypes) {
                     cumulativeProbability += cardType.probability;
                     if (random <= cumulativeProbability) {
-                        // Select random art for this card type
                         const randomArt = cardType.arts[Math.floor(Math.random() * cardType.arts.length)];
                         pack.push({
                             ...cardType,
@@ -517,7 +512,104 @@
             return pack;
         }
         
-        // Create sparkles for rare cards
+        // Create card stack
+        function createCardStack(pack) {
+            cardStack.innerHTML = '';
+            
+            pack.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'stacked-card';
+                cardElement.dataset.index = index;
+                
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+                cardContent.innerHTML = `
+                    <div class="card-art" style="background-image: url('https://img.pokemondb.net/artwork/${card.art}.jpg')"></div>
+                    <div>${card.art.toUpperCase()}</div>
+                    <div class="card-type">${card.type.toUpperCase()}</div>
+                    <div class="card-rarity">${card.type === 'ultra rare' ? '★★★★' : card.type === 'holo' ? '★★★' :  card.type === 'rare' ? '★★' : '★'}</div>
+                `;
+                
+                cardElement.appendChild(cardContent);
+                cardStack.appendChild(cardElement);
+                
+                // Position cards in stack
+                cardElement.style.transform = `translateY(${index * 2}px) rotateZ(${index % 2 ? '1deg' : '-1deg'})`;
+                cardElement.style.zIndex = 7 - index;
+                
+                // Add click event
+                cardElement.addEventListener('click', () => flipCard(cardElement, card));
+            });
+        }
+        
+        // Flip a card
+        function flipCard(cardElement, cardInfo) {
+            if (cardElement.classList.contains('flipped')) return;
+            
+            cardElement.classList.add('flipped');
+			
+			setTimeout(() => {
+				cardElement.style.display = 'none'
+			},1000)
+			
+            revealedCards++;
+            
+            // Move card to container
+            setTimeout(() => {
+                const newCard = document.createElement('div');
+                newCard.className = `card ${cardInfo.class}`;
+                newCard.innerHTML = `
+                    <div class="card-art" style="background-image: url('https://img.pokemondb.net/artwork/${cardInfo.art}.jpg')"></div>
+                    <div>${cardInfo.art.toUpperCase()}</div>
+                    <div class="card-type">${cardInfo.type.toUpperCase()}</div>
+                    <div class="card-rarity">${cardInfo.type === 'ultra rare' ? '★★★★' : cardInfo.type === 'holo' ? '★★★' : cardInfo.type === 'rare' ? '★★' : '★'}</div>
+                `;
+                
+                // Add special effects
+                if (cardInfo.type === 'holo' || cardInfo.type === 'ultra rare') {
+                    const holoEffect = document.createElement('div');
+                    holoEffect.className = 'holo-effect';
+                    newCard.appendChild(holoEffect);
+                }
+                
+                if (cardInfo.type === 'rare' || cardInfo.type === 'ultra rare') {
+                    createSparkles(newCard, cardInfo.type === 'ultra rare' ? 20 : 10);
+                }
+                
+                cardsContainer.appendChild(newCard);
+                
+                // Special effects for rare cards
+                if (cardInfo.type === 'rare' || cardInfo.type === 'holo' || cardInfo.type === 'ultra rare') {
+                    createPullEffect(cardInfo.type);
+                    
+                    if (cardInfo.type === 'ultra rare') {
+                        createConfetti();
+                    }
+                }
+                
+                // Check if all cards revealed
+                if (revealedCards === currentPack.length) {
+                    resetBtn.style.display = 'block';
+                }
+            }, 500);
+        }
+        
+        // Create pull effect
+        function createPullEffect(type) {
+            const pullEffect = document.createElement('div');
+            pullEffect.className = 'pull-animation';
+            pullEffect.style.background = type === 'ultra rare' ? 'radial-gradient(circle, #ff9d00, #ff5e00)' :
+                                      type === 'holo' ? 'radial-gradient(circle, #a8d8ea, #7ab8d8)' :
+                                      'radial-gradient(circle, #ffde00, #e6c700)';
+            pullEffect.style.width = '200px';
+            pullEffect.style.height = '200px';
+            pullEffect.style.borderRadius = '50%';
+            document.body.appendChild(pullEffect);
+            
+            setTimeout(() => pullEffect.remove(), 1000);
+        }
+        
+        // Create sparkles
         function createSparkles(element, count) {
             for (let i = 0; i < count; i++) {
                 const sparkle = document.createElement('div');
@@ -529,7 +621,7 @@
             }
         }
         
-        // Create confetti effect
+        // Create confetti
         function createConfetti() {
             const colors = ['#ff0000', '#ffde00', '#3b4cca', '#ffffff', '#00aaff'];
             
@@ -543,153 +635,48 @@
                 confetti.style.animationDuration = `${Math.random() * 2 + 2}s`;
                 document.body.appendChild(confetti);
                 
-                setTimeout(() => {
-                    confetti.remove();
-                }, 3000);
+                setTimeout(() => confetti.remove(), 3000);
             }
         }
         
-        // Reveal a single card
-        function revealCard(cardInfo, index) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const cardElement = document.createElement('div');
-                    cardElement.className = `card ${cardInfo.class}`;
-                    
-                    // Create card art placeholder
-                    const cardArt = document.createElement('div');
-                    cardArt.className = 'card-art';
-                    
-                    // Для ультра-редких карт используем альтернативные изображения
-                    if (cardInfo.type === 'ultra rare') {
-                        const artIndex = cardInfo.arts.indexOf(cardInfo.art);
-                        cardArt.style.backgroundImage = `url('${cardInfo.altArts[artIndex]}')`;
-                        cardArt.style.backgroundSize = 'cover';
-                    } else {
-                        cardArt.style.backgroundImage = `url('https://img.pokemondb.net/artwork/${cardInfo.art}.jpg')`;
-                    }
-                    
-                    // Create card content
-                    const cardName = document.createElement('div');
-                    cardName.textContent = cardInfo.art.split('-')[0].toUpperCase(); // Удаляем -rare для отображения
-                    
-                    const cardType = document.createElement('div');
-                    cardType.className = 'card-type';
-                    cardType.textContent = cardInfo.type.toUpperCase();
-                    
-                    const cardRarity = document.createElement('div');
-                    cardRarity.className = 'card-rarity';
-                    cardRarity.textContent = '★'.repeat(cardInfo.type === 'ultra rare' ? 3 : cardInfo.type === 'holo' ? 2 : 1);
-                    
-                    cardElement.appendChild(cardArt);
-                    cardElement.appendChild(cardName);
-                    cardElement.appendChild(cardType);
-                    cardElement.appendChild(cardRarity);
-                    
-                    // Add special effects for rare cards
-                    if (cardInfo.type === 'holo') {
-                        const holoEffect = document.createElement('div');
-                        holoEffect.className = 'holo-effect';
-                        cardElement.appendChild(holoEffect);
-                    }
-                    
-                    if (cardInfo.type === 'rare' || cardInfo.type === 'ultra rare') {
-                        createSparkles(cardElement, cardInfo.type === 'ultra rare' ? 20 : 10);
-                    }
-                    
-                    cardsContainer.appendChild(cardElement);
-                    
-                    // Trigger animation
-                    setTimeout(() => {
-                        cardElement.classList.add('revealed');
-                        
-                        // Special effects for rare cards
-                        if (cardInfo.type === 'rare' || cardInfo.type === 'holo' || cardInfo.type === 'ultra rare') {
-                            // Create pull animation effect
-                            const pullEffect = document.createElement('div');
-                            pullEffect.className = 'pull-animation';
-                            pullEffect.style.background = cardInfo.type === 'ultra rare' ? 'radial-gradient(circle, #ff9d00, #ff5e00)' :
-                                                          cardInfo.type === 'holo' ? 'radial-gradient(circle, #a8d8ea, #7ab8d8)' :
-                                                          'radial-gradient(circle, #ffde00, #e6c700)';
-                            pullEffect.style.width = '200px';
-                            pullEffect.style.height = '200px';
-                            pullEffect.style.borderRadius = '50%';
-                            document.body.appendChild(pullEffect);
-                            
-                            setTimeout(() => {
-                                pullEffect.remove();
-                            }, 1000);
-                            
-                            if (cardInfo.type === 'ultra rare') {
-                                createConfetti();
-                            }
-                        }
-                    }, 10);
-                    
-                    resolve();
-                }, index * 300);
-            });
-        }
-        
-        // Open the pack and reveal cards one by one
-        async function openPack() {
-            // Disable the button during opening
+        // Open the pack
+        function openPack() {
             openPackBtn.disabled = true;
             openPackBtn.textContent = 'OPENING...';
+            
+            // Generate pack
+            currentPack = generatePack();
+            revealedCards = 0;
             
             // Flip the pack
             boosterPack.classList.add('flipped');
             
-            // Generate random cards
-            const pack = generatePack();
+            // Clear previous cards
+            cardsContainer.innerHTML = '';
+            resetBtn.style.display = 'none';
             
-            // Reveal cards one by one
-            for (let i = 0; i < pack.length; i++) {
-                await revealCard(pack[i], i);
-                
-                // Wait a bit before next card (except for last card)
-                if (i < pack.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                }
-            }
-            
-            // Show reset button
-            resetBtn.style.display = 'block';
+            // Show card stack
+            setTimeout(() => {
+                cardStack.style.display = 'block';
+                createCardStack(currentPack);
+            }, 1000);
         }
         
         // Reset the pack
         function resetPack() {
-            // Hide reset button
             resetBtn.style.display = 'none';
-            
-            // Reset pack
+            cardStack.style.display = 'none';
             boosterPack.classList.remove('flipped');
             
-            // Clear cards with animation
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.transform = 'rotateY(180deg) scale(0.5)';
-                    card.style.opacity = '0';
-                    setTimeout(() => {
-                        card.remove();
-                    }, 500);
-                }, index * 100);
-            });
-            
-            // Re-enable open button
             setTimeout(() => {
                 openPackBtn.disabled = false;
                 openPackBtn.textContent = 'OPEN PACK';
-            }, cards.length * 100 + 500);
+            }, 500);
         }
         
         // Event listeners
         openPackBtn.addEventListener('click', openPack);
         resetBtn.addEventListener('click', resetPack);
-        
-        // Hide reset button initially
-        resetBtn.style.display = 'none';
     </script>
 </body>
 </html>
