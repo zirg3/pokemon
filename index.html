@@ -32,7 +32,6 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            <!-- transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); -->
             cursor: pointer;
             z-index: 10;
         }
@@ -153,7 +152,6 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: url('https://i.redd.it/smwf34egq5lc1.png') center/cover;
             border-radius: 10px;
             box-shadow: 
                 0 1px 1px rgba(0,0,0,0.1),
@@ -164,29 +162,18 @@
             transition: all 1s ease;
             cursor: pointer;
             border: 2px solid #ffde00;
-        }
-        
-        .stacked-card.flipped {
-            <!-- transform: rotateY(180deg) translateY(20px) !important; -->
-            z-index: 1;
-			transform:translateX(180px) !important;
-			opacity: 0.4;
-        }
-        
-        .card-content {
-		    background: white;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            <!-- transform: rotateY(180deg); -->
-            border-radius: 8px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 10px;
             box-sizing: border-box;
+        }
+        
+        .stacked-card.flipped {
+            transform: translateX(180px) !important;
+            opacity: 0.4;
+            z-index: 1;
         }
         
         /* Стили для карт после раскрытия */
@@ -261,7 +248,7 @@
         .holo-card {
             background: linear-gradient(145deg, #a8d8ea, #7ab8d8);
             color: #0d3c5f;
-            position: relative;
+            position: absolute;
             overflow: hidden;
             box-shadow: 0 0 40px rgba(168,216,234,0.8);
         }
@@ -269,7 +256,7 @@
         .ultra-rare-card {
             background: linear-gradient(145deg, #ff9d00, #ff5e00);
             color: white;
-            position: relative;
+            position: absolute;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(255,157,0,0.8);
         }
@@ -430,12 +417,12 @@
         const openPackBtn = document.getElementById('openPackBtn');
         let cards = document.querySelectorAll('.booster-pack');
 
-		VanillaTilt.init(cards, {
-			max: 15,  // Максимальный угол поворота карточки
-			glare: true,  // Включаем эффект блика
-			'max-glare': 0.5,  // Регулируем интенсивность блика
-		});
-		
+        VanillaTilt.init(cards, {
+            max: 15,
+            glare: true,
+            'max-glare': 0.5,
+        });
+        
         // Card types with probabilities
         const cardTypes = [
             { 
@@ -521,25 +508,33 @@
             return pack;
         }
         
-        // Create card stack
+        // Create card stack with proper styles
         function createCardStack(pack) {
             cardStack.innerHTML = '';
             
             pack.forEach((card, index) => {
                 const cardElement = document.createElement('div');
-                cardElement.className = 'stacked-card';
+                cardElement.className = `stacked-card ${card.class}`;
                 cardElement.dataset.index = index;
                 
-                const cardContent = document.createElement('div');
-                cardContent.className = 'card-content';
-                cardContent.innerHTML = `
+                cardElement.innerHTML = `
                     <div class="card-art" style="background-image: url('https://img.pokemondb.net/artwork/${card.art}.jpg')"></div>
                     <div>${card.art.toUpperCase()}</div>
                     <div class="card-type">${card.type.toUpperCase()}</div>
-                    <div class="card-rarity">${card.type === 'ultra rare' ? '★★★★' : card.type === 'holo' ? '★★★' :  card.type === 'rare' ? '★★' : '★'}</div>
+                    <div class="card-rarity">${card.type === 'ultra rare' ? '★★★★' : card.type === 'holo' ? '★★★' : card.type === 'rare' ? '★★' : '★'}</div>
                 `;
                 
-                cardElement.appendChild(cardContent);
+                // Add special effects
+                if (card.type === 'holo' || card.type === 'ultra rare') {
+                    const holoEffect = document.createElement('div');
+                    holoEffect.className = 'holo-effect';
+                    cardElement.appendChild(holoEffect);
+                }
+                
+                if (card.type === 'rare' || card.type === 'ultra rare') {
+                    createSparkles(cardElement, card.type === 'ultra rare' ? 20 : 10);
+                }
+                
                 cardStack.appendChild(cardElement);
                 
                 // Position cards in stack
@@ -556,34 +551,22 @@
             if (cardElement.classList.contains('flipped')) return;
             
             cardElement.classList.add('flipped');
-			
-			setTimeout(() => {
-				cardElement.style.display = 'none'
-			},1000)
-			
+            
+            setTimeout(() => {
+                cardElement.style.display = 'none';
+            }, 1000);
+            
             revealedCards++;
             
             // Move card to container
             setTimeout(() => {
-                const newCard = document.createElement('div');
+                const newCard = cardElement.cloneNode(true);
                 newCard.className = `card ${cardInfo.class}`;
-                newCard.innerHTML = `
-                    <div class="card-art" style="background-image: url('https://img.pokemondb.net/artwork/${cardInfo.art}.jpg')"></div>
-                    <div>${cardInfo.art.toUpperCase()}</div>
-                    <div class="card-type">${cardInfo.type.toUpperCase()}</div>
-                    <div class="card-rarity">${cardInfo.type === 'ultra rare' ? '★★★★' : cardInfo.type === 'holo' ? '★★★' : cardInfo.type === 'rare' ? '★★' : '★'}</div>
-                `;
-                
-                // Add special effects
-                if (cardInfo.type === 'holo' || cardInfo.type === 'ultra rare') {
-                    const holoEffect = document.createElement('div');
-                    holoEffect.className = 'holo-effect';
-                    newCard.appendChild(holoEffect);
-                }
-                
-                if (cardInfo.type === 'rare' || cardInfo.type === 'ultra rare') {
-                    createSparkles(newCard, cardInfo.type === 'ultra rare' ? 20 : 10);
-                }
+                newCard.style.display = 'flex';
+                newCard.style.transform = 'none';
+                newCard.style.position = 'relative';
+                newCard.style.margin = '0';
+                newCard.style.opacity = '1';
                 
                 cardsContainer.appendChild(newCard);
                 
